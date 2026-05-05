@@ -3,7 +3,7 @@ import os
 import numpy as np
 import cv2 as cv
 
-DATASET_PATH = r"C:\...\Plant_leave_diseases_dataset_with_augmentation"
+DATASET_PATH = r"./Deep-Learning/assets/Plant_leave_diseases_dataset_with_augmentation/"
 
 DATASET_SUBFOLDERS = [
     "Tomato___Bacterial_spot",
