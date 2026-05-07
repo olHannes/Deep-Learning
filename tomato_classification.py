@@ -1,10 +1,12 @@
 
-import os 
+from pathlib import Path
 import numpy as np
-import keras
 import tensorflow as tf
 
-DATASET_PATH = r"./Deep-Learning/assets/Plant_leave_diseases_dataset_with_augmentation/"
+BASE_PATH = Path(__file__).resolve().parent
+DATASET_PATH = BASE_PATH / "assets" / "Plant_leave_diseases_dataset_with_augmentation"
+if not DATASET_PATH.exists():
+    raise FileNotFoundError("Dataset path not found: ", DATASET_PATH)
 
 DATASET_SUBFOLDERS = [
     "Tomato___Bacterial_spot",
@@ -20,5 +22,32 @@ DATASET_SUBFOLDERS = [
 ]
 
 IMG_SIZE = (256, 256)
-IMG_FILES = ".jpg"
+BATCH_SIZE = 32
+SEED = 42
+
+
+
+
+def loadData(type):
+    trainData = tf.keras.utils.image_dataset_from_directory(
+        DATASET_PATH,
+        labels="inferred",
+        label_mode="int",
+        class_names=DATASET_SUBFOLDERS,
+        image_size=IMG_SIZE,
+        batch_size=BATCH_SIZE,
+        validation_split=0.2,
+        subset=type,
+        seed=SEED,
+        shuffle=True
+    )
+    return trainData
+
+
+trainData = loadData("training")
+validationData = loadData("validation")
+
+print("loaded Classes:")
+for index, name in enumerate(trainData.class_names):
+    print(index, name)
 
