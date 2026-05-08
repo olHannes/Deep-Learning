@@ -3,6 +3,8 @@ from pathlib import Path
 import numpy as np
 import tensorflow as tf
 
+from models.model_manager import get_model
+
 BASE_PATH = Path(__file__).resolve().parent
 DATASET_PATH = BASE_PATH / "assets" / "Plant_leave_diseases_dataset_with_augmentation"
 if not DATASET_PATH.exists():
@@ -26,28 +28,28 @@ BATCH_SIZE = 32
 SEED = 42
 
 
-
-
-def loadData(type):
+def loadData(dataset_path, dataset_subfolders, type, img_size, batch_size, seed):
     trainData = tf.keras.utils.image_dataset_from_directory(
-        DATASET_PATH,
+        dataset_path,
         labels="inferred",
         label_mode="int",
-        class_names=DATASET_SUBFOLDERS,
-        image_size=IMG_SIZE,
-        batch_size=BATCH_SIZE,
+        class_names=dataset_subfolders,
+        image_size=img_size,
+        batch_size=batch_size,
         validation_split=0.2,
         subset=type,
-        seed=SEED,
+        seed=seed,
         shuffle=True
     )
     return trainData
 
 
-trainData = loadData("training")
-validationData = loadData("validation")
+trainData = loadData(DATASET_PATH, DATASET_SUBFOLDERS, "training", IMG_SIZE, BATCH_SIZE, SEED)
+validationData = loadData(DATASET_PATH, DATASET_SUBFOLDERS, "validation", IMG_SIZE, BATCH_SIZE, SEED)
 
 print("loaded Classes:")
 for index, name in enumerate(trainData.class_names):
     print(index, name)
 
+model = get_model(model_choice=1)
+model.summary()
