@@ -4,9 +4,16 @@ import tensorflow as tf
 from tensorflow.keras.callbacks import TensorBoard
 import os
 
+os.environ["TF_NUM_INTRAOP_THREADS"] = "8"
+os.environ["TF_NUM_INTEROP_THREADS"] = "2"
+os.environ["OMP_NUM_THREADS"] = "8"
+
+tf.config.threading.set_intra_op_parallelism_threads(8)
+tf.config.threading.set_inter_op_parallelism_threads(2)
+
 from models.model_manager import get_model
 
-MODEL_CHOICE = 1
+MODEL_CHOICE = 2
 
 BASE_PATH = Path(__file__).resolve().parent
 DATASET_PATH = BASE_PATH / "assets" / "Plant_leave_diseases_dataset_with_augmentation"
@@ -16,7 +23,7 @@ if not DATASET_PATH.exists():
 log_dir = BASE_PATH / "logs"
 os.makedirs(log_dir, exist_ok=True)
 
-SAVE_PATH = BASE_PATH / "models" / "SavedModels" / f"model_{MODEL_CHOICE}"
+SAVE_PATH = BASE_PATH / "models" / "SavedModels" / f"model_{MODEL_CHOICE}.keras"
 
 tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
 
@@ -36,6 +43,7 @@ DATASET_SUBFOLDERS = [
 IMG_SIZE = (256, 256)
 BATCH_SIZE = 32
 SEED = 42
+EPOCHS = 10
 
 
 def loadData(dataset_path, dataset_subfolders, type, img_size, batch_size, seed):
@@ -57,10 +65,10 @@ def loadData(dataset_path, dataset_subfolders, type, img_size, batch_size, seed)
 trainData = loadData(DATASET_PATH, DATASET_SUBFOLDERS, "training", IMG_SIZE, BATCH_SIZE, SEED)
 validationData = loadData(DATASET_PATH, DATASET_SUBFOLDERS, "validation", IMG_SIZE, BATCH_SIZE, SEED)
 
+
 print("loaded Classes:")
 for index, name in enumerate(trainData.class_names):
     print(index, name)
-
 
 model = get_model(model_choice=MODEL_CHOICE)
 
@@ -76,8 +84,7 @@ model.summary()
 history = model.fit(
     trainData,
     validation_data=validationData,
-    epochs=10,
-    batch_size=BATCH_SIZE,
+    epochs=EPOCHS,
     callbacks=[tensorboard_callback]
 )
 
