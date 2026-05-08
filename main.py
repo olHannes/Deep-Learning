@@ -1,14 +1,21 @@
 
 from pathlib import Path
-import numpy as np
 import tensorflow as tf
+from tensorflow.keras.callbacks import TensorBoard
+import os
 
 from models.model_manager import get_model
+
 
 BASE_PATH = Path(__file__).resolve().parent
 DATASET_PATH = BASE_PATH / "assets" / "Plant_leave_diseases_dataset_with_augmentation"
 if not DATASET_PATH.exists():
     raise FileNotFoundError("Dataset path not found: ", DATASET_PATH)
+
+log_dir = BASE_PATH / "logs"
+os.makedirs(log_dir, exist_ok=True)
+
+tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
 
 DATASET_SUBFOLDERS = [
     "Tomato___Bacterial_spot",
@@ -51,5 +58,20 @@ print("loaded Classes:")
 for index, name in enumerate(trainData.class_names):
     print(index, name)
 
-model = get_model(model_choice=1)
+model = get_model(model_choice=2)
+
+model.compile(
+    optimizer="adam",
+    loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+    metrics=['accuracy']
+)
+
+history = model.fit(
+    trainData,
+    validation_data=validationData,
+    epochs=1,
+    batch_size=BATCH_SIZE,
+    callbacks=[tensorboard_callback]
+)
+
 model.summary()
