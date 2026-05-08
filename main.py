@@ -6,7 +6,7 @@ import os
 
 from models.model_manager import get_model
 
-MODEL_CHOICE = 2
+MODEL_CHOICE = 1
 
 BASE_PATH = Path(__file__).resolve().parent
 DATASET_PATH = BASE_PATH / "assets" / "Plant_leave_diseases_dataset_with_augmentation"
@@ -76,7 +76,7 @@ model.summary()
 history = model.fit(
     trainData,
     validation_data=validationData,
-    epochs=1,
+    epochs=10,
     batch_size=BATCH_SIZE,
     callbacks=[tensorboard_callback]
 )
