@@ -6,6 +6,7 @@ import os
 
 from models.model_manager import get_model
 
+MODEL_CHOICE = 2
 
 BASE_PATH = Path(__file__).resolve().parent
 DATASET_PATH = BASE_PATH / "assets" / "Plant_leave_diseases_dataset_with_augmentation"
@@ -14,6 +15,8 @@ if not DATASET_PATH.exists():
 
 log_dir = BASE_PATH / "logs"
 os.makedirs(log_dir, exist_ok=True)
+
+SAVE_PATH = BASE_PATH / "models" / "SavedModels" / f"model_{MODEL_CHOICE}"
 
 tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
 
@@ -58,13 +61,17 @@ print("loaded Classes:")
 for index, name in enumerate(trainData.class_names):
     print(index, name)
 
-model = get_model(model_choice=2)
+
+model = get_model(model_choice=MODEL_CHOICE)
 
 model.compile(
     optimizer="adam",
     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
     metrics=['accuracy']
 )
+
+model.summary()
+
 
 history = model.fit(
     trainData,
@@ -74,4 +81,5 @@ history = model.fit(
     callbacks=[tensorboard_callback]
 )
 
-model.summary()
+model.save(SAVE_PATH)
+print(f"Model saved at: {SAVE_PATH}")
