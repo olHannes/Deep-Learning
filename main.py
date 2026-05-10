@@ -1,22 +1,35 @@
-
 from pathlib import Path
-import tensorflow as tf
-from tensorflow.keras.callbacks import TensorBoard
 import os
 
+# Thread-Einstellungen möglichst vor TensorFlow setzen
 os.environ["TF_NUM_INTRAOP_THREADS"] = "8"
 os.environ["TF_NUM_INTEROP_THREADS"] = "2"
 os.environ["OMP_NUM_THREADS"] = "8"
+
+import tensorflow as tf
+from tensorflow.keras.callbacks import TensorBoard
+
+gpus = tf.config.list_physical_devices("GPU")
+
+if gpus:
+    try:
+        for gpu in gpus:
+            tf.config.experimental.set_memory_growth(gpu, True)
+        print("Verwendete GPUs:", gpus)
+    except RuntimeError as e:
+        print("GPU-Konfiguration konnte nicht geändert werden:", e)
+else:
+    print("Keine GPU gefunden. Training läuft auf CPU.")
 
 tf.config.threading.set_intra_op_parallelism_threads(8)
 tf.config.threading.set_inter_op_parallelism_threads(2)
 
 from models.model_manager import get_model
 
-MODEL_CHOICE = 3
+MODEL_CHOICE = 1
 
 BASE_PATH = Path(__file__).resolve().parent
-DATASET_PATH = BASE_PATH / "assets" / "Plant_leave_diseases_dataset_with_augmentation"
+DATASET_PATH = BASE_PATH / "assets" / "Plant_leave_diseases_dataset_with_augmentation" / "tomato_dataset"
 if not DATASET_PATH.exists():
     raise FileNotFoundError("Dataset path not found: ", DATASET_PATH)
 
@@ -41,7 +54,7 @@ DATASET_SUBFOLDERS = [
 ]
 
 IMG_SIZE = (256, 256)
-BATCH_SIZE = 32
+BATCH_SIZE = 8
 SEED = 42
 EPOCHS = 10
 
@@ -74,7 +87,7 @@ model = get_model(model_choice=MODEL_CHOICE)
 
 model.compile(
     optimizer="adam",
-    loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+    loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),
     metrics=['accuracy']
 )
 
