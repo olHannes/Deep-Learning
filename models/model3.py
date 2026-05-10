@@ -1,5 +1,5 @@
 import tensorflow as tf
-from keras import layers, models, Sequential
+from tensorflow.keras import layers, Sequential
 
 def build_model(input_shape=(256,256,3), num_clases=10):
     model = Sequential()
