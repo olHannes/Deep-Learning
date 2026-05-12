@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import numpy as np
 
 # Thread-Einstellungen möglichst vor TensorFlow setzen
 os.environ["TF_NUM_INTRAOP_THREADS"] = "8"
@@ -26,17 +27,22 @@ tf.config.threading.set_inter_op_parallelism_threads(2)
 
 from models.model_manager import get_model
 
-MODEL_CHOICE = 1
+MODEL_CHOICE = 10
+FIT = True
+TEST = False
 
 BASE_PATH = Path(__file__).resolve().parent
 DATASET_PATH = BASE_PATH / "assets" / "Plant_leave_diseases_dataset_with_augmentation" / "tomato_dataset"
 if not DATASET_PATH.exists():
     raise FileNotFoundError("Dataset path not found: ", DATASET_PATH)
 
+SAVE_PATH = BASE_PATH / "models" / "SavedModels" / f"model_{MODEL_CHOICE}.keras"
+
 log_dir = BASE_PATH / "logs"
 os.makedirs(log_dir, exist_ok=True)
 
-SAVE_PATH = BASE_PATH / "models" / "SavedModels" / f"model_{MODEL_CHOICE}.keras"
+saved_models_dir = BASE_PATH / "models" / "SavedModels"
+os.makedirs(saved_models_dir, exist_ok=True)
 
 tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
 
@@ -58,48 +64,107 @@ BATCH_SIZE = 8
 SEED = 42
 EPOCHS = 10
 
-
-def loadData(dataset_path, dataset_subfolders, type, img_size, batch_size, seed):
-    trainData = tf.keras.utils.image_dataset_from_directory(
+def loadDataSplit(dataset_path, dataset_subfolders, img_size, batch_size, seed):
+    # Alle Daten laden
+    all_data = tf.keras.utils.image_dataset_from_directory(
         dataset_path,
         labels="inferred",
         label_mode="int",
         class_names=dataset_subfolders,
         image_size=img_size,
         batch_size=batch_size,
-        validation_split=0.2,
-        subset=type,
         seed=seed,
         shuffle=True
     )
-    return trainData
+    
+    # class_names VOR dem Split speichern
+    class_names = all_data.class_names
+    
+    # Split: 60% Train, 20% Val, 20% Test
+    total_batches = tf.data.experimental.cardinality(all_data).numpy()
+    train_size = int(0.6 * total_batches)
+    val_size = int(0.2 * total_batches)
+    
+    trainData = all_data.take(train_size)
+    remaining = all_data.skip(train_size)
+    
+    validationData = remaining.take(val_size)
+    testData = remaining.skip(val_size)
+    
+    return trainData, validationData, testData, class_names
 
-
-trainData = loadData(DATASET_PATH, DATASET_SUBFOLDERS, "training", IMG_SIZE, BATCH_SIZE, SEED)
-validationData = loadData(DATASET_PATH, DATASET_SUBFOLDERS, "validation", IMG_SIZE, BATCH_SIZE, SEED)
-
+trainData, validationData, testData, class_names = loadDataSplit(
+    DATASET_PATH, DATASET_SUBFOLDERS, IMG_SIZE, BATCH_SIZE, SEED
+)
 
 print("loaded Classes:")
-for index, name in enumerate(trainData.class_names):
+for index, name in enumerate(class_names):
     print(index, name)
 
 model = get_model(model_choice=MODEL_CHOICE)
 
-model.compile(
-    optimizer="adam",
-    loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),
-    metrics=['accuracy']
-)
+if FIT is True:
+    model.compile(
+        optimizer="adam",
+        loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),
+        metrics=['accuracy']
+    )
 
-model.summary()
+    model.summary()
 
+    history = model.fit(
+        trainData,
+        validation_data=validationData,
+        epochs=EPOCHS,
+        callbacks=[tensorboard_callback]
+    )
 
-history = model.fit(
-    trainData,
-    validation_data=validationData,
-    epochs=EPOCHS,
-    callbacks=[tensorboard_callback]
-)
+    model.save(SAVE_PATH)
+    print(f"Model saved at: {SAVE_PATH}")
 
-model.save(SAVE_PATH)
-print(f"Model saved at: {SAVE_PATH}")
+else:
+    if not SAVE_PATH.exists():
+        raise FileNotFoundError(f"Model not found: {SAVE_PATH}")
+    model = tf.keras.models.load_model(SAVE_PATH)
+    print(f"Model {MODEL_CHOICE} loaded from: {SAVE_PATH}")
+
+# Test-Evaluation mit model.predict()
+def evaluate_on_test_data(model, testData, class_names):
+    print(f"Testing Model {MODEL_CHOICE} on Test Data...")
+    
+    all_predictions = []
+    all_true_labels = []
+    
+    for images, labels in testData:
+        predictions = model.predict(images, verbose=0)
+        probabilities = tf.nn.softmax(predictions).numpy()
+        
+        pred_classes = np.argmax(probabilities, axis=1)
+        all_predictions.extend(pred_classes)
+        all_true_labels.extend(labels.numpy())
+    
+    all_predictions = np.array(all_predictions)
+    all_true_labels = np.array(all_true_labels)
+    
+    # Accuracy berechnen
+    correct_predictions = np.sum(all_predictions == all_true_labels)
+    total_predictions = len(all_predictions)
+    test_accuracy = correct_predictions / total_predictions
+    
+    print(f"Test Accuracy: {test_accuracy:.4%} ({correct_predictions}/{total_predictions})")
+    
+    # Einfaches Classification Report (pro Klasse)
+    print("\nKlassen-Performance:")
+    for i, class_name in enumerate(class_names):
+        class_mask = (all_true_labels == i)
+        if np.sum(class_mask) > 0:
+            class_correct = np.sum(all_predictions[class_mask] == i)
+            class_total = np.sum(class_mask)
+            class_acc = class_correct / class_total
+            print(f"  {class_name}: {class_acc:.2%} ({class_correct}/{class_total})")
+    
+    return test_accuracy, all_predictions, all_true_labels
+
+# Test-Evaluation aufrufen
+if TEST is True:
+    test_accuracy, predictions, true_labels = evaluate_on_test_data(model, testData, class_names)

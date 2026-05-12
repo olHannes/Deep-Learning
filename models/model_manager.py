@@ -2,6 +2,7 @@
 from models import model1
 from models import model2
 from models import model3
+from models import model10
 
 def get_model(model_choice=0, input_shape=(256,256,3), num_clases=10):
     
@@ -11,5 +12,7 @@ def get_model(model_choice=0, input_shape=(256,256,3), num_clases=10):
         return model2.build_model(input_shape, num_clases)
     elif model_choice == 3:
         return model3.build_model(input_shape, num_clases)
+    elif model_choice == 10:
+        return model10.build_model(input_shape, num_clases)
     else:
         raise ValueError("Invalid model-choice: " , model_choice)
