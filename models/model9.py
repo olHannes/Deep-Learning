@@ -22,6 +22,6 @@ def build_model(input_shape=(256, 256, 3), num_classes=10):
     
     model.add(layers.Flatten())
     model.add(layers.Dense(256, activation="relu"))
-    model.add(layers.Dense(10, activation="softmax"))
+    model.add(layers.Dense(num_classes, activation="softmax"))
 
     return model
