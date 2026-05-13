@@ -27,7 +27,7 @@ tf.config.threading.set_inter_op_parallelism_threads(2)
 
 from models.model_manager import get_model
 
-MODEL_CHOICE = 2  # Wählen der Modellnummer (1-10) aus den modelX.py Dateien
+MODEL_CHOICE = 10  # Wählen der Modellnummer (1-10) aus den modelX.py Dateien
 FIT = True
 TEST = False
 
