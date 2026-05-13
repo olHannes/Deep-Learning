@@ -1,15 +1,16 @@
 from pathlib import Path
 import os
 import numpy as np
+import tensorflow as tf
+from tensorflow.keras.callbacks import TensorBoard
+from models.model_manager import get_model
 
 # Thread-Einstellungen möglichst vor TensorFlow setzen
 os.environ["TF_NUM_INTRAOP_THREADS"] = "8"
 os.environ["TF_NUM_INTEROP_THREADS"] = "2"
 os.environ["OMP_NUM_THREADS"] = "8"
 
-import tensorflow as tf
-from tensorflow.keras.callbacks import TensorBoard
-
+# GPU Logik
 gpus = tf.config.list_physical_devices("GPU")
 
 if gpus:
@@ -25,26 +26,23 @@ else:
 tf.config.threading.set_intra_op_parallelism_threads(8)
 tf.config.threading.set_inter_op_parallelism_threads(2)
 
-from models.model_manager import get_model
-
+# Konfigurationsparameter
 MODEL_CHOICE = 10  # Wählen der Modellnummer (1-10) aus den modelX.py Dateien
-FIT = True
-TEST = False
+FIT = True # True = Trainieren, False = Laden
+TEST = False # True = Test mit model.predict(), False = Kein Test
+
+IMG_SIZE = (256, 256)
+BATCH_SIZE = 8
+SEED = 42
+EPOCHS = 10
 
 BASE_PATH = Path(__file__).resolve().parent
+
 DATASET_PATH = BASE_PATH / "assets" / "Plant_leave_diseases_dataset_with_augmentation" / "tomato_dataset"
 if not DATASET_PATH.exists():
     raise FileNotFoundError("Dataset path not found: ", DATASET_PATH)
 
 SAVE_PATH = BASE_PATH / "models" / "SavedModels" / f"model_{MODEL_CHOICE}.keras"
-
-log_dir = BASE_PATH / "logs"
-os.makedirs(log_dir, exist_ok=True)
-
-saved_models_dir = BASE_PATH / "models" / "SavedModels"
-os.makedirs(saved_models_dir, exist_ok=True)
-
-tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
 
 DATASET_SUBFOLDERS = [
     "Tomato___Bacterial_spot",
@@ -59,10 +57,13 @@ DATASET_SUBFOLDERS = [
     "Tomato___Tomato_Yellow_Leaf_Curl_Virus"
 ]
 
-IMG_SIZE = (256, 256)
-BATCH_SIZE = 8
-SEED = 42
-EPOCHS = 10
+log_dir = BASE_PATH / "logs"
+os.makedirs(log_dir, exist_ok=True)
+
+saved_models_dir = BASE_PATH / "models" / "SavedModels"
+os.makedirs(saved_models_dir, exist_ok=True)
+
+tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
 
 def loadDataSplit(dataset_path, dataset_subfolders, img_size, batch_size, seed):
     # Alle Daten laden
@@ -77,10 +78,10 @@ def loadDataSplit(dataset_path, dataset_subfolders, img_size, batch_size, seed):
         shuffle=True
     )
     
-    # class_names VOR dem Split speichern
+    # class_names vor dem Split speichern
     class_names = all_data.class_names
     
-    # Split: 60% Train, 20% Val, 20% Test
+    # Split: 60 Train, 20 Val, 20 Test
     total_batches = tf.data.experimental.cardinality(all_data).numpy()
     train_size = int(0.6 * total_batches)
     val_size = int(0.2 * total_batches)
@@ -97,11 +98,11 @@ trainData, validationData, testData, class_names = loadDataSplit(
     DATASET_PATH, DATASET_SUBFOLDERS, IMG_SIZE, BATCH_SIZE, SEED
 )
 
-print("loaded Classes:")
+print("Loaded classes:")
 for index, name in enumerate(class_names):
     print(index, name)
 
-model = get_model(model_choice=MODEL_CHOICE)
+model = get_model(model_choice=MODEL_CHOICE, input_shape=IMG_SIZE + (3,), num_classes=len(class_names))
 
 if FIT is True:
     model.compile(
@@ -128,7 +129,7 @@ else:
     model = tf.keras.models.load_model(SAVE_PATH)
     print(f"Model {MODEL_CHOICE} loaded from: {SAVE_PATH}")
 
-# Test-Evaluation mit model.predict()
+# Test mit model.predict()
 def evaluate_on_test_data(model, testData, class_names):
     print(f"Testing Model {MODEL_CHOICE} on Test Data...")
     
@@ -153,7 +154,7 @@ def evaluate_on_test_data(model, testData, class_names):
     
     print(f"Test Accuracy: {test_accuracy:.4%} ({correct_predictions}/{total_predictions})")
     
-    # Einfaches Classification Report (pro Klasse)
+    # Einfaches Classification Report für jede Klasse
     print("\nKlassen-Performance:")
     for i, class_name in enumerate(class_names):
         class_mask = (all_true_labels == i)
@@ -165,6 +166,6 @@ def evaluate_on_test_data(model, testData, class_names):
     
     return test_accuracy, all_predictions, all_true_labels
 
-# Test-Evaluation aufrufen
+# Test aufrufen
 if TEST is True:
     test_accuracy, predictions, true_labels = evaluate_on_test_data(model, testData, class_names)
