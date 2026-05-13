@@ -2,6 +2,12 @@
 from models import model1
 from models import model2
 from models import model3
+from models import model4
+from models import model5
+from models import model6
+from models import model7
+from models import model8
+from models import model9
 from models import model10
 
 def get_model(model_choice=0, input_shape=(256,256,3), num_classes=10):
@@ -13,17 +19,17 @@ def get_model(model_choice=0, input_shape=(256,256,3), num_classes=10):
     elif model_choice == 3:
         return model3.build_model(input_shape, num_classes)
     elif model_choice == 4:
-        return model3.build_model(input_shape, num_classes)
+        return model4.build_model(input_shape, num_classes)
     elif model_choice == 5:
-        return model3.build_model(input_shape, num_classes)
+        return model5.build_model(input_shape, num_classes)
     elif model_choice == 6:
-        return model3.build_model(input_shape, num_classes)
+        return model6.build_model(input_shape, num_classes)
     elif model_choice == 7:
-        return model3.build_model(input_shape, num_classes)
+        return model7.build_model(input_shape, num_classes)
     elif model_choice == 8:
-        return model3.build_model(input_shape, num_classes)
+        return model8.build_model(input_shape, num_classes)
     elif model_choice == 9:
-        return model3.build_model(input_shape, num_classes)
+        return model9.build_model(input_shape, num_classes)
     elif model_choice == 10:
         return model10.build_model(input_shape, num_classes)
     else:

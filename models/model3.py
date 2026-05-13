@@ -1,6 +1,7 @@
 import tensorflow as tf
 from tensorflow.keras import layers, Sequential
 
+# Zu groß
 def build_model(input_shape=(256, 256, 3), num_classes=10):
     model = Sequential()
 
@@ -14,6 +15,7 @@ def build_model(input_shape=(256, 256, 3), num_classes=10):
     
     model.add(layers.Conv2D(1024, (7,7), activation="relu"))
     model.add(layers.MaxPooling2D((2,2)))
+
 
     model.add(layers.Flatten())
     model.add(layers.Dense(1024, activation="relu"))
