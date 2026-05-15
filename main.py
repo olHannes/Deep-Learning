@@ -3,7 +3,9 @@ import os
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.callbacks import TensorBoard
+
 from models.model_manager import get_model
+from evaluation.evaluation import evaluate_model
 
 # Thread-Einstellungen möglichst vor TensorFlow setzen
 os.environ["TF_NUM_INTRAOP_THREADS"] = "8"
@@ -43,6 +45,8 @@ if not DATASET_PATH.exists():
     raise FileNotFoundError("Dataset path not found: ", DATASET_PATH)
 
 SAVE_PATH = BASE_PATH / "models" / "SavedModels" / f"model_{MODEL_CHOICE}.keras"
+
+RESULT_DIR = BASE_PATH / "results"
 
 DATASET_SUBFOLDERS = [
     "Tomato___Bacterial_spot",
@@ -168,4 +172,10 @@ def evaluate_on_test_data(model, testData, class_names):
 
 # Test aufrufen
 if TEST is True:
-    test_accuracy, predictions, true_labels = evaluate_on_test_data(model, testData, class_names)
+    results = evaluate_model(
+        model = model,
+        test_data = testData,
+        classes=class_names,
+        output_dir=RESULT_DIR,
+        model_name=f"model_{MODEL_CHOICE}"
+    )
