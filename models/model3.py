@@ -17,7 +17,7 @@ def build_model(input_shape=(256, 256, 3), num_classes=10):
     model.add(layers.MaxPool2D(2,2))
 
 
-    model.add(layers.Flatten())
+    model.add(layers.GlobalAveragePooling2D())
     model.add(layers.Dense(1024, activation="relu"))
     model.add(layers.Dense(num_classes, activation="softmax"))
 
