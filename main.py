@@ -29,7 +29,7 @@ tf.config.threading.set_intra_op_parallelism_threads(8)
 tf.config.threading.set_inter_op_parallelism_threads(2)
 
 # Konfigurationsparameter
-MODEL_CHOICE = 4 # Wählen der Modellnummer (1-10) aus den modelX.py Dateien
+MODEL_CHOICE = 10 # Wählen der Modellnummer (1-10) aus den modelX.py Dateien
 FIT = True # True = Trainieren, False = Laden
 TEST = True # True = Test mit model.predict(), False = Kein Test
 

@@ -1,0 +1,31 @@
+Evaluation Report
+===================================
+
+Model Information
+------------------
+Model name: model_7
+Parameter count: 2381802
+Layer count: 14
+Conv layer count: 5
+Dense layer count: 3
+Class count: 10
+
+Metrics
+------------------
+Accuracy: 0.7811
+Precision: 0.7572
+Recall: 0.7122
+F1 Score: 0.7170
+
+Class Performance
+------------------
+Tomato___Bacterial_spot:	76.06% (324/426)
+Tomato___Early_blight:	27.00% (54/200)
+Tomato___Late_blight:	75.72% (290/383)
+Tomato___Leaf_Mold:	69.00% (138/200)
+Tomato___Septoria_leaf_spot:	75.21% (267/355)
+Tomato___Spider_mites Two-spotted_spider_mite:	53.87% (181/336)
+Tomato___Target_Spot:	76.24% (215/282)
+Tomato___Tomato_Yellow_Leaf_Curl_Virus:	97.01% (1040/1072)
+Tomato___Tomato_mosaic_virus:	66.50% (133/200)
+Tomato___healthy:	95.61% (305/319)
