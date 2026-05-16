@@ -48,7 +48,7 @@ SAVE_PATH = BASE_PATH / "models" / "SavedModels" / f"model_{MODEL_CHOICE}.keras"
 
 RESULT_DIR = BASE_PATH / "results"
 
-log_dir = BASE_PATH / "logs"
+log_dir = BASE_PATH / "logs" / f"model_{MODEL_CHOICE}"
 os.makedirs(log_dir, exist_ok=True)
 
 saved_models_dir = BASE_PATH / "models" / "SavedModels"
