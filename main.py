@@ -7,12 +7,12 @@ from tensorflow.keras.callbacks import TensorBoard
 from models.model_manager import get_model
 from evaluation.evaluation import evaluate_model
 
-# Thread-Einstellungen möglichst vor TensorFlow setzen
+# Thread-Settings
 os.environ["TF_NUM_INTRAOP_THREADS"] = "8"
 os.environ["TF_NUM_INTEROP_THREADS"] = "2"
 os.environ["OMP_NUM_THREADS"] = "8"
 
-# GPU Logik
+# GPU logic
 gpus = tf.config.list_physical_devices("GPU")
 
 if gpus:
@@ -28,10 +28,10 @@ else:
 tf.config.threading.set_intra_op_parallelism_threads(8)
 tf.config.threading.set_inter_op_parallelism_threads(2)
 
-# Konfigurationsparameter
-MODEL_CHOICE = 10 # Wählen der Modellnummer (1-10) aus den modelX.py Dateien
-FIT = True # True = Trainieren, False = Laden
-TEST = True # True = Test mit model.predict(), False = Kein Test
+# config parameter
+MODEL_CHOICE = 5 # choose modelnumber (1-10) from the modelX.py files
+FIT = True # True = train, False = load
+TEST = True # True = test with model.predict(), False = no testing
 
 IMG_SIZE = (256, 256)
 BATCH_SIZE = 32
@@ -118,6 +118,7 @@ if FIT is True:
     )
 
     model.summary()
+    exit(0)
 
     history = model.fit(
         trainData,
@@ -135,7 +136,7 @@ else:
     model = tf.keras.models.load_model(SAVE_PATH)
     print(f"Model {MODEL_CHOICE} loaded from: {SAVE_PATH}")
 
-# Test aufrufen
+# call test (evaluation)
 if TEST is True:
     results = evaluate_model(
         model = model,

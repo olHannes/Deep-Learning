@@ -1,6 +1,10 @@
 import tensorflow as tf
 from tensorflow.keras import layers, Sequential
 
+#2,721,098 params
+#6 Conv layers
+#left out maxPool layers
+
 def build_model(input_shape=(256, 256, 3), num_classes=10):
     model = Sequential()
 
