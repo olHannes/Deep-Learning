@@ -40,26 +40,13 @@ EPOCHS = 10
 
 BASE_PATH = Path(__file__).resolve().parent
 
-DATASET_PATH = BASE_PATH / "assets" / "Plant_leave_diseases_dataset_with_augmentation" / "tomato_dataset"
+DATASET_PATH = BASE_PATH / "assets" / "tomato_split_dataset"
 if not DATASET_PATH.exists():
     raise FileNotFoundError("Dataset path not found: ", DATASET_PATH)
 
 SAVE_PATH = BASE_PATH / "models" / "SavedModels" / f"model_{MODEL_CHOICE}.keras"
 
 RESULT_DIR = BASE_PATH / "results"
-
-DATASET_SUBFOLDERS = [
-    "Tomato___Bacterial_spot",
-    "Tomato___Early_blight",
-    "Tomato___healthy",
-    "Tomato___Late_blight",
-    "Tomato___Leaf_Mold",
-    "Tomato___Septoria_leaf_spot",
-    "Tomato___Spider_mites Two-spotted_spider_mite",
-    "Tomato___Target_Spot",
-    "Tomato___Tomato_mosaic_virus",
-    "Tomato___Tomato_Yellow_Leaf_Curl_Virus"
-]
 
 log_dir = BASE_PATH / "logs"
 os.makedirs(log_dir, exist_ok=True)
@@ -69,37 +56,52 @@ os.makedirs(saved_models_dir, exist_ok=True)
 
 tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
 
-def loadDataSplit(dataset_path, dataset_subfolders, img_size, batch_size, seed):
-    # Alle Daten laden
-    all_data = tf.keras.utils.image_dataset_from_directory(
-        dataset_path,
+def loadDataSplit(dataset_path, img_size, batch_size, seed):
+
+    trainData = tf.keras.utils.image_dataset_from_directory(
+        dataset_path / "train",
         labels="inferred",
         label_mode="int",
-        class_names=dataset_subfolders,
         image_size=img_size,
         batch_size=batch_size,
-        seed=seed,
-        shuffle=True
+        shuffle=True,
+        seed=seed
     )
-    
-    # class_names vor dem Split speichern
-    class_names = all_data.class_names
-    
-    # Split: 60 Train, 20 Val, 20 Test
-    total_batches = tf.data.experimental.cardinality(all_data).numpy()
-    train_size = int(0.6 * total_batches)
-    val_size = int(0.2 * total_batches)
-    
-    trainData = all_data.take(train_size)
-    remaining = all_data.skip(train_size)
-    
-    validationData = remaining.take(val_size)
-    testData = remaining.skip(val_size)
-    
+
+    validationData = tf.keras.utils.image_dataset_from_directory(
+        dataset_path / "val",
+        labels="inferred",
+        label_mode="int",
+        image_size=img_size,
+        batch_size=batch_size,
+        shuffle=True,
+        seed=seed
+    )
+
+    testData = tf.keras.utils.image_dataset_from_directory(
+        dataset_path / "test",
+        labels="inferred",
+        label_mode="int",
+        image_size=img_size,
+        batch_size=batch_size,
+        shuffle=False
+    )
+
+    class_names = trainData.class_names
+
+    AUTOTUNE = tf.data.AUTOTUNE
+
+    trainData = trainData.prefetch(buffer_size=AUTOTUNE)
+    validationData = validationData.prefetch(buffer_size=AUTOTUNE)
+    testData = testData.prefetch(buffer_size=AUTOTUNE)
+
     return trainData, validationData, testData, class_names
 
 trainData, validationData, testData, class_names = loadDataSplit(
-    DATASET_PATH, DATASET_SUBFOLDERS, IMG_SIZE, BATCH_SIZE, SEED
+    DATASET_PATH,
+    IMG_SIZE,
+    BATCH_SIZE,
+    SEED
 )
 
 print("Loaded classes:")
