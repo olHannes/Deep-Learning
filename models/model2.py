@@ -1,7 +1,6 @@
 import tensorflow as tf
 from tensorflow.keras import layers, Sequential
 
-# Zu groß
 def build_model(input_shape=(256, 256, 3), num_classes=10):
     model = Sequential()
 
