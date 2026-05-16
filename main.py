@@ -135,43 +135,6 @@ else:
     model = tf.keras.models.load_model(SAVE_PATH)
     print(f"Model {MODEL_CHOICE} loaded from: {SAVE_PATH}")
 
-# Test mit model.predict()
-def evaluate_on_test_data(model, testData, class_names):
-    print(f"Testing Model {MODEL_CHOICE} on Test Data...")
-    
-    all_predictions = []
-    all_true_labels = []
-    
-    for images, labels in testData:
-        predictions = model.predict(images, verbose=0)
-        probabilities = tf.nn.softmax(predictions).numpy()
-        
-        pred_classes = np.argmax(probabilities, axis=1)
-        all_predictions.extend(pred_classes)
-        all_true_labels.extend(labels.numpy())
-    
-    all_predictions = np.array(all_predictions)
-    all_true_labels = np.array(all_true_labels)
-    
-    # Accuracy berechnen
-    correct_predictions = np.sum(all_predictions == all_true_labels)
-    total_predictions = len(all_predictions)
-    test_accuracy = correct_predictions / total_predictions
-    
-    print(f"Test Accuracy: {test_accuracy:.4%} ({correct_predictions}/{total_predictions})")
-    
-    # Einfaches Classification Report für jede Klasse
-    print("\nKlassen-Performance:")
-    for i, class_name in enumerate(class_names):
-        class_mask = (all_true_labels == i)
-        if np.sum(class_mask) > 0:
-            class_correct = np.sum(all_predictions[class_mask] == i)
-            class_total = np.sum(class_mask)
-            class_acc = class_correct / class_total
-            print(f"  {class_name}: {class_acc:.2%} ({class_correct}/{class_total})")
-    
-    return test_accuracy, all_predictions, all_true_labels
-
 # Test aufrufen
 if TEST is True:
     results = evaluate_model(
