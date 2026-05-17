@@ -118,7 +118,6 @@ if FIT is True:
     )
 
     model.summary()
-    exit(0)
 
     history = model.fit(
         trainData,
