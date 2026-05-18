@@ -7,7 +7,7 @@ The goal of this project is to determine the health status of a tomato plant bas
 The classification is divided into 10 health / infestation classes.
 
 ## Data set:
-https://www.kaggle.com/datasets/sravanneeli/plant-leaf-diseases-dataset-with-augmentation/data
+https://data.mendeley.com/datasets/tywbtsjrjv/1
 
 ## Usage
 The parameters *FIT* and *TEST* determine whether the system should train or test a model. The model is selected via the *MODEL_CHOICE* parameter. When testing a model, a folder is automatically created in `/results`, along with a report and a confusion matrix.
