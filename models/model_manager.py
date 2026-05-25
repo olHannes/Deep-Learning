@@ -9,6 +9,7 @@ from models import model7
 from models import model8
 from models import model9
 from models import model10
+from models import resNet_station_2
 
 def get_model(model_choice=0, input_shape=(256,256,3), num_classes=10):
     
@@ -32,5 +33,7 @@ def get_model(model_choice=0, input_shape=(256,256,3), num_classes=10):
         return model9.build_model(input_shape, num_classes)
     elif model_choice == 10:
         return model10.build_model(input_shape, num_classes)
+    elif model_choice == "resNet":
+        return resNet_station_2.build_model(input_shape, num_classes)
     else:
         raise ValueError("Invalid model-choice: " , model_choice)
