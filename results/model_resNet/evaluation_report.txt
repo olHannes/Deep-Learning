@@ -1,0 +1,31 @@
+Evaluation Report
+===================================
+
+Model Information
+------------------
+Model name: model_resNet
+Parameter count: 24641930
+Layer count: 8
+Conv layer count: 0
+Dense layer count: 2
+Class count: 10
+
+Metrics
+------------------
+Accuracy: 0.9698
+Precision: 0.9617
+Recall: 0.9643
+F1 Score: 0.9624
+
+Class Performance
+------------------
+Tomato___Bacterial_spot:	99.53% (424/426)
+Tomato___Early_blight:	93.50% (187/200)
+Tomato___Late_blight:	98.69% (378/383)
+Tomato___Leaf_Mold:	96.00% (192/200)
+Tomato___Septoria_leaf_spot:	94.37% (335/355)
+Tomato___Spider_mites Two-spotted_spider_mite:	98.21% (330/336)
+Tomato___Target_Spot:	88.30% (249/282)
+Tomato___Tomato_Yellow_Leaf_Curl_Virus:	98.23% (1053/1072)
+Tomato___Tomato_mosaic_virus:	100.00% (200/200)
+Tomato___healthy:	97.49% (311/319)
