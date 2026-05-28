@@ -1,0 +1,31 @@
+Evaluation Report
+===================================
+
+Model Information
+------------------
+Model name: model_vgg
+Parameter count: 14982474
+Layer count: 8
+Conv layer count: 0
+Dense layer count: 2
+Class count: 10
+
+Metrics
+------------------
+Accuracy: 0.9481
+Precision: 0.9368
+Recall: 0.9322
+F1 Score: 0.9338
+
+Class Performance
+------------------
+Tomato___Bacterial_spot:	97.18% (414/426)
+Tomato___Early_blight:	82.00% (164/200)
+Tomato___Late_blight:	92.43% (354/383)
+Tomato___Leaf_Mold:	97.00% (194/200)
+Tomato___Septoria_leaf_spot:	97.75% (347/355)
+Tomato___Spider_mites Two-spotted_spider_mite:	93.75% (315/336)
+Tomato___Target_Spot:	80.85% (228/282)
+Tomato___Tomato_Yellow_Leaf_Curl_Virus:	99.16% (1063/1072)
+Tomato___Tomato_mosaic_virus:	96.50% (193/200)
+Tomato___healthy:	95.61% (305/319)
