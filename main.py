@@ -29,7 +29,7 @@ tf.config.threading.set_intra_op_parallelism_threads(8)
 tf.config.threading.set_inter_op_parallelism_threads(2)
 
 # config parameter
-MODEL_CHOICE = "resNet"#5 # choose modelnumber (1-10) from the modelX.py files
+MODEL_CHOICE = "vgg"#5 # choose modelnumber (1-10) from the modelX.py files
 FIT = True # True = train, False = load
 TEST = True # True = test with model.predict(), False = no testing
 
