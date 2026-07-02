@@ -3,7 +3,7 @@ Evaluation Report
 
 Model Information
 ------------------
-Model name: model_10
+Model name: model_distillation_distilled
 Parameter count: 1573674
 Layer count: 14
 Conv layer count: 5
