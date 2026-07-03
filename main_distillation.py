@@ -168,11 +168,3 @@ evaluate_model(
     output_dir=RESULT_DIR,
     model_name="model_distillation_distilled"
 )
-
-evaluate_model(
-    model = distiller.student,
-    test_data = testData,
-    classes=class_names,
-    output_dir=RESULT_DIR,
-    model_name=f"model_{STUDENT_MODEL_CHOICE}"
-)
