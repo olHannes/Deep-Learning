@@ -130,7 +130,7 @@ teacher_model.trainable = False
 distiller = Distiller(
     student=student_model,
     teacher=teacher_model,
-    alpha=0.2,
+    alpha=0.4,
     temperature=4.0,
     from_logits=False
 )

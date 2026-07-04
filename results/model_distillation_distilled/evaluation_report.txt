@@ -12,20 +12,20 @@ Class count: 10
 
 Metrics
 ------------------
-Accuracy: 0.8887
-Precision: 0.8690
-Recall: 0.8633
-F1 Score: 0.8558
+Accuracy: 0.9109
+Precision: 0.8897
+Recall: 0.8838
+F1 Score: 0.8821
 
 Class Performance
 ------------------
-Tomato___Bacterial_spot:	96.24% (410/426)
-Tomato___Early_blight:	82.50% (165/200)
-Tomato___Late_blight:	87.99% (337/383)
+Tomato___Bacterial_spot:	98.12% (418/426)
+Tomato___Early_blight:	76.50% (153/200)
+Tomato___Late_blight:	94.52% (362/383)
 Tomato___Leaf_Mold:	93.50% (187/200)
-Tomato___Septoria_leaf_spot:	79.15% (281/355)
-Tomato___Spider_mites Two-spotted_spider_mite:	94.05% (316/336)
-Tomato___Target_Spot:	49.29% (139/282)
-Tomato___Tomato_Yellow_Leaf_Curl_Virus:	97.01% (1040/1072)
+Tomato___Septoria_leaf_spot:	70.70% (251/355)
+Tomato___Spider_mites Two-spotted_spider_mite:	92.26% (310/336)
+Tomato___Target_Spot:	74.82% (211/282)
+Tomato___Tomato_Yellow_Leaf_Curl_Virus:	99.44% (1066/1072)
 Tomato___Tomato_mosaic_virus:	90.50% (181/200)
-Tomato___healthy:	93.10% (297/319)
+Tomato___healthy:	93.42% (298/319)
